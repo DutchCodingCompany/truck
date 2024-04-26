@@ -1,40 +1,37 @@
 class FirebaseConfig extends FirebaseBaseConfig {
   const FirebaseConfig({
     required this.cliToken,
-    required this.android,
-    required this.ios,
-    required super.releaseNotes,
-    required super.groups,
-    required super.testers,
+    this.android,
+    this.ios,
+    super.releaseNotes,
+    super.groups,
+    super.testers,
   });
 
   final String cliToken;
-  final FirebasePlatformConfig android;
-  final FirebasePlatformConfig ios;
+  final FirebasePlatformConfig? android;
+  final FirebasePlatformConfig? ios;
 }
 
 class FirebaseBaseConfig {
-
   const FirebaseBaseConfig({
-    required this.releaseNotes,
-    required this.groups,
-    required this.testers,
+    this.releaseNotes,
+    this.groups,
+    this.testers,
   });
 
-  final String releaseNotes;
-  final List<String> groups;
-  final List<String> testers;
-
+  final String? releaseNotes;
+  final List<String>? groups;
+  final List<String>? testers;
 }
 
 class FirebasePlatformConfig extends FirebaseBaseConfig {
-
   const FirebasePlatformConfig({
     required this.appId,
     required this.file,
-    required super.releaseNotes,
-    required super.groups,
-    required super.testers,
+    super.releaseNotes,
+    super.groups,
+    super.testers,
   });
 
   final String appId;
