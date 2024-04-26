@@ -1,0 +1,30 @@
+import 'package:yaml/yaml.dart';
+
+
+void main() {
+  final result = loadYaml(r'''
+truck:
+  firebase:
+    release_notes: 'RELEASE: $CI_COMMIT'
+    cli_token: $FIREBASE_CLI_TOKEN
+    groups: 
+      - 'testers'
+    testers: 
+      - 'testers@test.com'
+      - 'test2@test.com'
+    android:
+      release_notes: 'RELEASE: $CI_COMMIT'
+      app_id: 1:123456789012:android:1234567890123456789012
+      file: build/app/outputs/flutter-apk/app-release.apk
+    ios:
+      app_id: 1:123456789012:ios:1234567890123456789012
+      file: build/app/outputs/flutter-apk/app-release.ipa
+      groups: 
+        - 'testers'
+      testers:
+        - 'testers@test.com'
+        - 'test2@test.com'
+  ''');
+
+  print(result);
+}
