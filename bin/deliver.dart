@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:truck/src/firebase_config.dart';
 import 'package:truck/src/firebase_delivery.dart';
 import 'package:truck/src/help_util.dart';
 import 'package:yaml/yaml.dart';
@@ -11,8 +10,6 @@ const deliveries = [
 ];
 
 void main(List<String> args) {
-  print('booop: ${args.join(', ')}');
-
   final parser = ArgParser()
     ..addOption('path', abbr: 'p', help: 'Specify Path')
     ..addFlag(
@@ -25,19 +22,11 @@ void main(List<String> args) {
     parser.addCommand(delivery.name, delivery.parser);
   }
 
+  // parse args
   final result = parser.parse(args);
-
   printHelp(result, parser);
-  var path = result.option('path');
+  final path = result.option('path') ?? 'pubspec.yaml';
   final deliveryArgs = result.command;
-
-  if (path != null) {
-    // print('Delivering $path');
-  } else {
-    path = 'pubspec.yaml';
-  }
-
-  print(path);
 
   final YamlMap yamlMap;
   try {
@@ -47,19 +36,16 @@ void main(List<String> args) {
     return;
   }
 
-  final config = FirebaseConfig.fromYaml((yamlMap['truck'] as YamlMap)['firebase'] as YamlMap);
-
-  print(config.cliToken);
-
-// parse yaml
-// configs
-
-  final delivery = deliveries.where((d) => d.name == deliveryArgs?.name).firstOrNull;
-  if (delivery == null || deliveryArgs == null) {
+  if (deliveryArgs == null) {
     print('No delivery found');
-    return;
+    exit(1);
   }
-  delivery.deliver(deliveryArgs, YamlMap());
-// loop args
-// call deliver with args and configs
+
+  final delivery = deliveries.where((d) => d.name == deliveryArgs.name).firstOrNull;
+  final yamlConfigMap = (yamlMap['truck'] as YamlMap?)?[deliveryArgs.name] as YamlMap?;
+  if (delivery == null || yamlConfigMap == null) {
+    print('No delivery configuration found');
+    exit(1);
+  }
+  delivery.deliver(deliveryArgs, yamlConfigMap);
 }

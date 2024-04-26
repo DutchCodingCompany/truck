@@ -31,8 +31,11 @@ class FirebaseDelivery implements Delivery {
 
   @override
   void deliver(ArgResults args, YamlMap config) {
-    final parsedArgs = parseArgs(args);
-    print('Delivering via Firebase\n$parsedArgs');
+    final argsConfig = parseArgs(args);
+    final yamlConfig = FirebaseConfig.fromYaml(config);
+    final mergedConfig = yamlConfig.merge(argsConfig);
+    print(' 🚚 Delivering to Firebase 🚚');
+    print(mergedConfig);
   }
 
   FirebaseConfig parseArgs(ArgResults args) {

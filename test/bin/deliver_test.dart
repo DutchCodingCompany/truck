@@ -10,7 +10,7 @@ void main() {
     const pubspec = 'pubspec.yaml';
     final process = await Process.start(
       'dart',
-      ['run', 'truck:deliver'],
+      ['run', 'truck:deliver firebase'],
     );
 
     final lineStream = process.stdout.transform(const Utf8Decoder()).transform(const LineSplitter());
@@ -27,7 +27,7 @@ void main() {
     const path = 'does-not-exist.yaml';
     final process = await Process.start(
       'dart',
-      ['run', 'truck:deliver', '--path=$path'],
+      ['run', 'truck:deliver', 'firebase', '--path=$path'],
     );
 
     final lineStream = process.stdout.transform(const Utf8Decoder()).transform(const LineSplitter());
@@ -46,7 +46,7 @@ void main() {
     const path = 'test/sample_yamls/truck.yaml';
     final process = await Process.start(
       'dart',
-      ['run', 'truck:deliver', '--path=$path'],
+      ['run', 'truck:deliver','firebase', '--path=$path'],
     );
 
     final lineStream = process.stdout.transform(const Utf8Decoder()).transform(const LineSplitter());
