@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:truck/src/firebase_config.dart';
 import 'package:truck/src/firebase_delivery.dart';
 import 'package:truck/src/help_util.dart';
 import 'package:yaml/yaml.dart';
@@ -31,10 +32,24 @@ void main(List<String> args) {
   final deliveryArgs = result.command;
 
   if (path != null) {
-    print('Delivering $path');
+    // print('Delivering $path');
   } else {
     path = 'pubspec.yaml';
   }
+
+  print(path);
+
+  final YamlMap yamlMap;
+  try {
+    yamlMap = loadYaml(File(path).readAsStringSync()) as YamlMap;
+  } catch (e) {
+    print('Your `$path` appears to be empty or malformed.');
+    return;
+  }
+
+  final config = FirebaseConfig.fromYaml((yamlMap['truck'] as YamlMap)['firebase'] as YamlMap);
+
+  print(config.cliToken);
 
 // parse yaml
 // configs
@@ -45,4 +60,6 @@ void main(List<String> args) {
     return;
   }
   delivery.deliver(deliveryArgs, YamlMap());
+// loop args
+// call deliver with args and configs
 }
