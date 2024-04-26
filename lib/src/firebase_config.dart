@@ -11,6 +11,12 @@ class FirebaseConfig extends FirebaseBaseConfig {
   final String cliToken;
   final FirebasePlatformConfig? android;
   final FirebasePlatformConfig? ios;
+
+  @override
+  String toString() {
+    return 'FirebaseConfig(cliToken: $cliToken, android: $android, ios: $ios, '
+        'releaseNotes: $releaseNotes, groups: $groups, testers: $testers)';
+  }
 }
 
 class FirebaseBaseConfig {
@@ -36,4 +42,10 @@ class FirebasePlatformConfig extends FirebaseBaseConfig {
 
   final String appId;
   final String file;
+
+  @override
+  String toString() {
+    return 'FirebasePlatformConfig(appId: $appId, file: $file, releaseNotes: '
+        '$releaseNotes, groups: $groups, testers: $testers)';
+  }
 }
