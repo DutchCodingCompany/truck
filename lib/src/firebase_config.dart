@@ -1,5 +1,8 @@
+import 'package:collection/collection.dart';
+import 'package:meta/meta.dart';
 import 'package:yaml/yaml.dart';
 
+@immutable
 class FirebaseConfig extends FirebaseBaseConfig {
   factory FirebaseConfig.fromYaml(YamlMap yaml) {
     final android = yaml['android'] as YamlMap?;
@@ -34,19 +37,39 @@ class FirebaseConfig extends FirebaseBaseConfig {
       releaseNotes: config.releaseNotes ?? releaseNotes,
       groups: config.groups ?? groups,
       testers: config.testers ?? testers,
-      android: config.android != null && android != null ? android!.merge(config.android!) : android,
-      ios: config.ios != null && ios != null ? ios!.merge(config.ios!) : ios,
+      android: config.android != null && android != null ? android!.merge(config.android!) : android ?? config.android,
+      ios: config.ios != null && ios != null ? ios!.merge(config.ios!) :  ios ?? config.ios,
     );
   }
 
   @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is FirebaseConfig &&
+            super == other &&
+            cliToken == other.cliToken &&
+            android == other.android &&
+            ios == other.ios;
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+        cliToken,
+        releaseNotes,
+        groups,
+        testers,
+        android,
+        ios,
+      ]);
+
+  @override
   String toString() {
-    return 'FirebaseConfig(\n\tcliToken: $cliToken,\n\tandroid: $android,'
-        '\n\tios: $ios,\n\treleaseNotes: $releaseNotes,\n\tgroups: $groups,'
-        '\n\ttesters: $testers\n)';
+    return 'FirebaseConfig($cliToken, $releaseNotes, $groups, $testers, '
+        '$android, $ios)';
   }
 }
 
+@immutable
 class FirebaseBaseConfig {
   const FirebaseBaseConfig({
     this.releaseNotes,
@@ -57,8 +80,21 @@ class FirebaseBaseConfig {
   final String? releaseNotes;
   final List<String>? groups;
   final List<String>? testers;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is FirebaseBaseConfig &&
+            releaseNotes == other.releaseNotes &&
+            const DeepCollectionEquality().equals(groups, other.groups) &&
+            const DeepCollectionEquality().equals(testers, other.testers);
+  }
+
+  @override
+  int get hashCode => Object.hashAll([releaseNotes, groups, testers]);
 }
 
+@immutable
 class FirebasePlatformConfig extends FirebaseBaseConfig {
   const FirebasePlatformConfig({
     required this.appId,
@@ -92,9 +128,23 @@ class FirebasePlatformConfig extends FirebaseBaseConfig {
   }
 
   @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is FirebasePlatformConfig && super == other && appId == other.appId && file == other.file;
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+        appId,
+        file,
+        releaseNotes,
+        groups,
+        testers,
+      ]);
+
+  @override
   String toString() {
-    return 'FirebasePlatformConfig(\n\tappId: $appId,\n\tfile: $file,'
-        '\n\treleaseNotes: $releaseNotes,\n\tgroups: $groups,'
-        '\n\ttesters: $testers\n)';
+    return 'FirebasePlatformConfig($appId, $file, $releaseNotes, $groups, '
+        '$testers)';
   }
 }

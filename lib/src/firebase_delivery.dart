@@ -1,5 +1,5 @@
 import 'package:args/args.dart';
-import 'package:truck/src/args_result_extensions.dart';
+import 'package:truck/src/args_results_extension.dart';
 import 'package:truck/src/delivery.dart';
 import 'package:truck/src/firebase_config.dart';
 import 'package:truck/src/help_util.dart';
