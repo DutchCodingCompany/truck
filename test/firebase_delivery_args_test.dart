@@ -42,6 +42,23 @@ void main() {
     expect(result.android?.appId, '123');
     expect(result.android?.file, 'pubspec.yaml');
   });
+
+  test('parse ios firebase options', () {
+    final args = _args('ios --file pubspec.yaml --app-id 123 --groups=group1,group2 --testers=tester1,tester2');
+
+    final result = delivery.parseArgs(parser.parse(args));
+
+    expect(result.cliToken, '');
+    expect(eq(result.groups, []), isTrue);
+    expect(eq(result.testers, []), isTrue);
+    expect(result.ios, isNotNull);
+    expect(result.ios, null);
+
+    expect(eq(result.ios?.groups, ['group1', 'group2']), isTrue);
+    expect(eq(result.ios?.testers, ['tester1', 'tester2']), isTrue);
+    expect(result.ios?.appId, '123');
+    expect(result.ios?.file, 'pubspec.yaml');
+  });
 }
 
 List<String> _args(String args) => args.split(' ');
