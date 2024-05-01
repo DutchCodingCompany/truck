@@ -3,7 +3,9 @@ import 'package:yaml/yaml.dart';
 
 abstract interface class Delivery {
 
-  (String, ArgParser) get parser;
+  String get name;
+
+  ArgParser get parser;
 
   void deliver(ArgResults args, YamlMap config);
 }
