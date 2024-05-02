@@ -2,14 +2,14 @@
 
 import 'package:parameterized_test/parameterized_test.dart';
 import 'package:test/test.dart';
-import 'package:truck/src/firebase_config.dart';
+import 'package:truck/src/deliveries/firebase/config/firebase_config.dart';
 import 'package:yaml/yaml.dart';
 
 void main() {
   test('fromYaml returns a FirebaseConfig object', () {
     final yaml = loadYaml('''
 release_notes: 'RELEASE: CI_COMMIT'
-cli_token: test
+service_account_file: test
 groups: 
   - 'testers'
 testers: 
@@ -31,7 +31,7 @@ ios:
     final config = FirebaseConfig.fromYaml(yaml);
 
     expect(config, isA<FirebaseConfig>());
-    expect(config.cliToken, 'test');
+    expect(config.serviceAccountFile, 'test');
     expect(config.releaseNotes, 'RELEASE: CI_COMMIT');
     expect(config.groups, ['testers']);
     expect(config.testers, ['testers@test.com', 'test2@test.com']);
@@ -50,69 +50,69 @@ ios:
 
   parameterizedTest('config merge test', [
     [
-      const FirebaseConfig(cliToken: 'token1'),
-      const FirebaseConfig(cliToken: 'token2'),
-      const FirebaseConfig(cliToken: 'token2'),
+      const FirebaseConfig(serviceAccountFile: 'token1'),
+      const FirebaseConfig(serviceAccountFile: 'token2'),
+      const FirebaseConfig(serviceAccountFile: 'token2'),
     ],
     [
-      const FirebaseConfig(cliToken: 'token1'),
-      const FirebaseConfig(cliToken: 'token2', groups: ['1']),
-      const FirebaseConfig(cliToken: 'token2', groups: ['1']),
+      const FirebaseConfig(serviceAccountFile: 'token1'),
+      const FirebaseConfig(serviceAccountFile: 'token2', groups: ['1']),
+      const FirebaseConfig(serviceAccountFile: 'token2', groups: ['1']),
     ],
     [
-      const FirebaseConfig(cliToken: 'token1', testers: ['1']),
-      const FirebaseConfig(cliToken: 'token2', groups: ['2']),
-      const FirebaseConfig(cliToken: 'token2', groups: ['2'], testers: ['1']),
+      const FirebaseConfig(serviceAccountFile: 'token1', testers: ['1']),
+      const FirebaseConfig(serviceAccountFile: 'token2', groups: ['2']),
+      const FirebaseConfig(serviceAccountFile: 'token2', groups: ['2'], testers: ['1']),
     ],
     [
       const FirebaseConfig(
-        cliToken: 'token1',
+        serviceAccountFile: 'token1',
         android: FirebasePlatformConfig(appId: '1', file: '2'),
       ),
       const FirebaseConfig(
-        cliToken: 'token2',
+        serviceAccountFile: 'token2',
         android: FirebasePlatformConfig(appId: '3', file: '4'),
       ),
       const FirebaseConfig(
-        cliToken: 'token2',
+        serviceAccountFile: 'token2',
         android: FirebasePlatformConfig(appId: '3', file: '4'),
       ),
     ],
     [
       const FirebaseConfig(
-        cliToken: 'token1',
+        serviceAccountFile: 'token1',
         android: FirebasePlatformConfig(appId: '1', file: '2'),
       ),
       const FirebaseConfig(
-        cliToken: 'token2',
+        serviceAccountFile: 'token2',
         ios: FirebasePlatformConfig(appId: '3', file: '4'),
       ),
       const FirebaseConfig(
-        cliToken: 'token2',
+        serviceAccountFile: 'token2',
         android: FirebasePlatformConfig(appId: '1', file: '2'),
         ios: FirebasePlatformConfig(appId: '3', file: '4'),
       ),
     ],
     [
       const FirebaseConfig(
-        cliToken: 'token1',
+        serviceAccountFile: 'token1',
         android: FirebasePlatformConfig(appId: '11', file: '2'),
         ios: FirebasePlatformConfig(appId: '33', file: '4'),
       ),
       const FirebaseConfig(
-        cliToken: 'token2',
+        serviceAccountFile: 'token2',
         android: FirebasePlatformConfig(appId: '11', file: '3'),
         ios: FirebasePlatformConfig(appId: '33', file: '5'),
       ),
       const FirebaseConfig(
-        cliToken: 'token2',
+        serviceAccountFile: 'token2',
         android: FirebasePlatformConfig(appId: '11', file: '3'),
         ios: FirebasePlatformConfig(appId: '33', file: '5'),
       ),
     ],
     [
       const FirebaseConfig(
-        cliToken: 'token1',
+        serviceAccountFile: 'token1',
         releaseNotes: 'releaseNotes1',
         groups: ['group1'],
         testers: ['tester1'],
@@ -132,7 +132,7 @@ ios:
         ),
       ),
       const FirebaseConfig(
-        cliToken: 'token2',
+        serviceAccountFile: 'token2',
         releaseNotes: 'releaseNotes2',
         groups: ['group2'],
         testers: ['tester2'],
@@ -152,7 +152,7 @@ ios:
         ),
       ),
       const FirebaseConfig(
-        cliToken: 'token2',
+        serviceAccountFile: 'token2',
         releaseNotes: 'releaseNotes2',
         groups: ['group2'],
         testers: ['tester2'],

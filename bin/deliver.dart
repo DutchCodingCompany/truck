@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:truck/src/firebase_delivery.dart';
+import 'package:truck/src/deliveries/firebase/firebase_delivery.dart';
 import 'package:truck/src/help_util.dart';
 import 'package:yaml/yaml.dart';
 

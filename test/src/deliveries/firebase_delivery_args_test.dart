@@ -1,7 +1,7 @@
 import 'package:args/args.dart';
 import 'package:collection/collection.dart';
 import 'package:test/test.dart';
-import 'package:truck/src/firebase_delivery.dart';
+import 'package:truck/src/deliveries/firebase/firebase_delivery.dart';
 
 bool Function(List<String>?, List<String>?) eq = const ListEquality<String>().equals;
 
@@ -19,7 +19,7 @@ void main() {
 
     final result = delivery.parseArgs(parser.parse(args));
 
-    expect(result.cliToken, 'token');
+    expect(result.serviceAccountFile, 'token');
     expect(eq(result.groups, ['group1', 'group2']), isTrue);
     expect(eq(result.testers, ['tester1', 'tester2']), isTrue);
     expect(result.android, null);
@@ -31,7 +31,7 @@ void main() {
 
     final result = delivery.parseArgs(parser.parse(args));
 
-    expect(result.cliToken, '');
+    expect(result.serviceAccountFile, '');
     expect(eq(result.groups, []), isTrue);
     expect(eq(result.testers, []), isTrue);
     expect(result.android, isNotNull);
@@ -48,7 +48,7 @@ void main() {
 
     final result = delivery.parseArgs(parser.parse(args));
 
-    expect(result.cliToken, '');
+    expect(result.serviceAccountFile, '');
     expect(eq(result.groups, []), isTrue);
     expect(eq(result.testers, []), isTrue);
     expect(result.ios, isNotNull);
