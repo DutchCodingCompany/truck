@@ -1,5 +1,6 @@
 import 'package:args/args.dart';
 import 'package:meta/meta.dart';
+import 'package:truck/src/args_results_extension.dart';
 import 'package:truck/src/deliveries/firebase/config/firebase_base_config.dart';
 import 'package:truck/src/help_util.dart';
 import 'package:yaml/yaml.dart';
@@ -31,8 +32,8 @@ class FirebasePlatformConfig extends FirebaseBaseConfig {
       appId: args.option('app-id') ?? '',
       file: args.option('file') ?? '',
       releaseNotes: args.option('release-notes'),
-      groups: args.multiOption('groups'),
-      testers: args.multiOption('testers'),
+      groups: args.multiOptionOrNull('groups'),
+      testers: args.multiOptionOrNull('testers'),
     );
   }
 

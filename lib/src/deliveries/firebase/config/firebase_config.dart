@@ -32,8 +32,8 @@ class FirebaseConfig extends FirebaseBaseConfig {
     return FirebaseConfig(
       serviceAccountFile: args.option('service-account-file'),
       releaseNotes: args.option('release-notes'),
-      groups: args.multiOption('groups'),
-      testers: args.multiOption('testers'),
+      groups: args.multiOptionOrNull('groups'),
+      testers: args.multiOptionOrNull('testers'),
       android: android != null ? FirebasePlatformConfig.fromArgs(android, appParser.commands['android']!) : null,
       ios: ios != null ? FirebasePlatformConfig.fromArgs(ios, appParser.commands['ios']!) : null,
     );
@@ -52,7 +52,7 @@ class FirebaseConfig extends FirebaseBaseConfig {
   final FirebasePlatformConfig? android;
   final FirebasePlatformConfig? ios;
 
-  FirebaseConfig merge(FirebaseConfig config) {
+  FirebaseConfig join(FirebaseConfig config) {
     return FirebaseConfig(
       serviceAccountFile: config.serviceAccountFile ?? serviceAccountFile,
       releaseNotes: config.releaseNotes ?? releaseNotes,

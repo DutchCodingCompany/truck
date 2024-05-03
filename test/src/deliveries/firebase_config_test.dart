@@ -173,7 +173,7 @@ ios:
       ),
     ],
   ], (FirebaseConfig config1, FirebaseConfig config2, FirebaseConfig expected) {
-    final result = config1.merge(config2);
+    final result = config1.join(config2);
     expect(result, expected);
   });
 }
