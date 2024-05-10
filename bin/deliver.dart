@@ -40,8 +40,10 @@ void main(List<String> args) {
     log.error('No delivery found');
   }
 
-  final delivery = deliveries.where((d) => d.name == deliveryArgs.name).firstOrNull;
-  final yamlConfigMap = (yamlMap['truck'] as YamlMap?)?[deliveryArgs.name] as YamlMap?;
+  final delivery =
+      deliveries.where((d) => d.name == deliveryArgs.name).firstOrNull;
+  final yamlConfigMap =
+      (yamlMap['truck'] as YamlMap?)?[deliveryArgs.name] as YamlMap?;
   if (delivery == null || yamlConfigMap == null) {
     log.error('No delivery configuration found');
   }

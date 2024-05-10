@@ -102,20 +102,25 @@ class FirebaseDelivery implements Delivery {
 
     if (releaseNotes != null) {
       try {
-        release.releaseNotes = GoogleFirebaseAppdistroV1ReleaseNotes(text: releaseNotes);
-        release = await api.projects.apps.releases.patch(release, release.name!);
+        release.releaseNotes =
+            GoogleFirebaseAppdistroV1ReleaseNotes(text: releaseNotes);
+        release =
+            await api.projects.apps.releases.patch(release, release.name!);
       } catch (e) {
-        _log.error('Unable to add release notes to release ${release.name}, $e');
+        _log.error(
+            'Unable to add release notes to release ${release.name}, $e');
       }
 
       if (groups.isNotEmpty && testers.isNotEmpty) {
         try {
-          final distribution = GoogleFirebaseAppdistroV1DistributeReleaseRequest(
+          final distribution =
+              GoogleFirebaseAppdistroV1DistributeReleaseRequest(
             testerEmails: testers,
             groupAliases: groups,
           );
 
-          await api.projects.apps.releases.distribute(distribution, release.name!);
+          await api.projects.apps.releases
+              .distribute(distribution, release.name!);
         } catch (e) {
           _log.error('Unable to distribute release ${release.name} to groups: '
               '${groups.join(',')} and testers: ${testers.join(',')}\n $e');
@@ -138,7 +143,8 @@ class FirebaseDelivery implements Delivery {
     }
 
     for (var i = 0; i < 60; i++) {
-      final response = await api.projects.apps.releases.operations.get(operation.name!);
+      final response =
+          await api.projects.apps.releases.operations.get(operation.name!);
       final release = _checkOperation(response);
       if (release != null) {
         return release;
@@ -166,12 +172,14 @@ class FirebaseDelivery implements Delivery {
 
   @visibleForTesting
   // ignore: public_member_api_docs
-  String projectAppId(String appId) => 'projects/${appId.split(':')[1]}/apps/$appId';
+  String projectAppId(String appId) =>
+      'projects/${appId.split(':')[1]}/apps/$appId';
 
   Future<Client> _getGClient(FirebaseConfig config) async {
     if (_client != null) return _client;
 
-    final serviceAccountContent = File(config.serviceAccountFile!).readAsStringSync();
+    final serviceAccountContent =
+        File(config.serviceAccountFile!).readAsStringSync();
     final credentials = ServiceAccountCredentials.fromJson(
       jsonDecode(serviceAccountContent) as Map<String, dynamic>,
     );

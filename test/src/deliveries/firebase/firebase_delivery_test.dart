@@ -34,7 +34,8 @@ void main() {
     );
   });
 
-  test('uploadBinary should upload binary and distribute release successfully', () async {
+  test('uploadBinary should upload binary and distribute release successfully',
+      () async {
     final mockClient = MockClient((request) async {
       if (request.url.path.contains('upload')) {
         return Response(jsonEncode({'name': 'operationName'}), 200);
@@ -51,7 +52,8 @@ void main() {
       return Response('', 404);
     });
 
-    final firebaseDelivery = FirebaseDelivery(client: mockClient, customLog: mockLog);
+    final firebaseDelivery =
+        FirebaseDelivery(client: mockClient, customLog: mockLog);
     final config = FirebaseConfig(serviceAccountFile: 'serviceAccountFile');
     final platformConfig = FirebasePlatformConfig(appId: 'appId', file: 'file');
 
@@ -65,7 +67,8 @@ void main() {
       return Response('', 404);
     });
 
-    final firebaseDelivery = FirebaseDelivery(client: mockClient, customLog: mockLog);
+    final firebaseDelivery =
+        FirebaseDelivery(client: mockClient, customLog: mockLog);
     final config = FirebaseConfig(serviceAccountFile: 'serviceAccountFile');
     final platformConfig = FirebasePlatformConfig(appId: 'appId', file: 'file');
 
@@ -85,7 +88,8 @@ void main() {
           headers: {'content-type': 'application/json'});
     });
 
-    final firebaseDelivery = FirebaseDelivery(client: mockClient, customLog: mockLog);
+    final firebaseDelivery =
+        FirebaseDelivery(client: mockClient, customLog: mockLog);
     final operation = GoogleLongrunningOperation()..name = 'operationName';
 
     final api = FirebaseAppDistributionApi(mockClient);
@@ -105,7 +109,8 @@ void main() {
           headers: {'content-type': 'application/json'});
     });
 
-    final firebaseDelivery = FirebaseDelivery(client: mockClient, customLog: mockLog);
+    final firebaseDelivery =
+        FirebaseDelivery(client: mockClient, customLog: mockLog);
     final operation = GoogleLongrunningOperation()..name = 'operationName';
 
     final api = FirebaseAppDistributionApi(mockClient);
@@ -125,7 +130,8 @@ void main() {
       );
     });
 
-    final firebaseDelivery = FirebaseDelivery(client: mockClient, customLog: mockLog);
+    final firebaseDelivery =
+        FirebaseDelivery(client: mockClient, customLog: mockLog);
     final operation = GoogleLongrunningOperation()..name = 'operationName';
 
     final api = FirebaseAppDistributionApi(mockClient);

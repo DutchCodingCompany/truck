@@ -19,7 +19,7 @@ void main() {
 
   test('parse global firebase options', () {
     final args = _args(
-      '--cli-token=token --groups=group1,group2 --testers=tester1,tester2',
+      '--service-account-file=token --groups=group1,group2 --testers=tester1,tester2',
     );
     final parseResults = parser.parse(args);
 
@@ -41,9 +41,9 @@ void main() {
 
     final result = FirebaseConfig.fromArgs(parseResults, parser);
 
-    expect(result.serviceAccountFile, '');
-    expect(eq(result.groups, []), isTrue);
-    expect(eq(result.testers, []), isTrue);
+    expect(result.serviceAccountFile, isNull);
+    expect(result.groups, isNull);
+    expect(result.testers, isNull);
     expect(result.android, isNotNull);
     expect(result.ios, null);
 
@@ -62,11 +62,10 @@ void main() {
 
     final result = FirebaseConfig.fromArgs(parseResults, parser);
 
-    expect(result.serviceAccountFile, '');
-    expect(eq(result.groups, []), isTrue);
-    expect(eq(result.testers, []), isTrue);
+    expect(result.serviceAccountFile, isNull);
+    expect(result.groups, isNull);
+    expect(result.testers, isNull);
     expect(result.ios, isNotNull);
-    expect(result.ios, null);
 
     expect(eq(result.ios?.groups, ['group1', 'group2']), isTrue);
     expect(eq(result.ios?.testers, ['tester1', 'tester2']), isTrue);
