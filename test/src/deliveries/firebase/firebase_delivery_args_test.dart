@@ -35,7 +35,7 @@ void main() {
   test('parse android firebase options', () {
     final args = _args(
       'android --file pubspec.yaml --app-id 123 '
-          '--groups=group1,group2 --testers=tester1,tester2',
+      '--groups=group1,group2 --testers=tester1,tester2',
     );
     final parseResults = parser.parse(args);
 
@@ -56,7 +56,7 @@ void main() {
   test('parse ios firebase options', () {
     final args = _args(
       'ios --file pubspec.yaml --app-id 123 --groups=group1,group2 '
-          '--testers=tester1,tester2',
+      '--testers=tester1,tester2',
     );
     final parseResults = parser.parse(args);
 

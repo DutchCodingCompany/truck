@@ -9,6 +9,7 @@ import 'package:meta/meta.dart';
 import 'package:truck/src/deliveries/delivery.dart';
 import 'package:truck/src/deliveries/firebase/config/firebase_config.dart';
 import 'package:truck/src/deliveries/firebase/config/firebase_platform_config.dart';
+import 'package:truck/src/util/logging.dart';
 import 'package:yaml/yaml.dart';
 
 /// {@template FirebaseDelivery}
@@ -31,28 +32,29 @@ class FirebaseDelivery implements Delivery {
     final mergedConfig = yamlConfig.join(argsConfig);
 
     // TODO(guldem): check config
-    print(mergedConfig);
+    info(mergedConfig);
 
     final platform = args.command?.name;
     final gClient = await getGClient(mergedConfig);
 
     if (platform == 'android') {
-      print(' 🚚 Delivering Android to Firebase 🚚');
+      info('Delivering Android to Firebase');
       await uploadBinary(
         gClient,
         mergedConfig,
         mergedConfig.android!,
       );
     } else if (platform == 'ios') {
-      print(' 🚚 Delivering iOS to Firebase 🚚');
+      info('Delivering iOS to Firebase');
       await uploadBinary(
         gClient,
         mergedConfig,
         mergedConfig.ios!,
       );
     } else {
-      print(
-          'Could not deliver to Firebase. Please specify a platform (android/ios)',);
+      error(
+        'Could not deliver to Firebase. Please specify a platform (android/ios)',
+      );
     }
   }
 
@@ -77,7 +79,8 @@ class FirebaseDelivery implements Delivery {
     try {
       final uploadResponse = await client.post(
         Uri.parse(
-            'https://firebaseappdistribution.googleapis.com/upload/v1/$appId/releases:upload',),
+          'https://firebaseappdistribution.googleapis.com/upload/v1/$appId/releases:upload',
+        ),
         body: fileContent,
         headers: {
           'Content-Type': 'application/octet-stream',
@@ -91,9 +94,7 @@ class FirebaseDelivery implements Delivery {
       );
       release = await pollOperations(api, operation);
     } catch (e) {
-      print('Unable to upload binary to Firebase');
-      print(e);
-      exit(1);
+      error('Unable to upload binary to Firebase: $e');
     }
 
     if (releaseNotes != null) {
@@ -103,9 +104,7 @@ class FirebaseDelivery implements Delivery {
         release =
             await api.projects.apps.releases.patch(release, release.name!);
       } catch (e) {
-        print('Unable to add release notes to release ${release.name}');
-        print(e);
-        exit(1);
+        error('Unable to add release notes to release ${release.name}, $e');
       }
 
       if (groups.isNotEmpty && testers.isNotEmpty) {
@@ -119,14 +118,12 @@ class FirebaseDelivery implements Delivery {
           await api.projects.apps.releases
               .distribute(distribution, release.name!);
         } catch (e) {
-          print('Unable to distribute release ${release.name} to groups: '
-              '${groups.join(',')} and testers: ${testers.join(',')}');
-          print(e);
-          exit(1);
+          error('Unable to distribute release ${release.name} to groups: '
+              '${groups.join(',')} and testers: ${testers.join(',')}\n $e');
         }
       }
 
-      print('Release delivered successfully!');
+      info('Release delivered successfully!');
     }
   }
 
@@ -154,14 +151,15 @@ class FirebaseDelivery implements Delivery {
   }
 
   GoogleFirebaseAppdistroV1Release? _checkOperation(
-      GoogleLongrunningOperation operation,) {
+    GoogleLongrunningOperation operation,
+  ) {
     if (operation.done ?? false) {
       if (operation.error != null) {
-        print('Error: ${operation.error!.message}');
-        exit(1);
+        error('Error: ${operation.error!.message}');
       } else {
         return GoogleFirebaseAppdistroV1Release.fromJson(
-            operation.response!['release']! as Map<String, dynamic>,);
+          operation.response!['release']! as Map<String, dynamic>,
+        );
       }
     }
     return null;
@@ -182,7 +180,9 @@ class FirebaseDelivery implements Delivery {
     );
 
     return clientViaServiceAccount(
-        credentials, [FirebaseAppDistributionApi.cloudPlatformScope],);
+      credentials,
+      [FirebaseAppDistributionApi.cloudPlatformScope],
+    );
   }
 
   @override

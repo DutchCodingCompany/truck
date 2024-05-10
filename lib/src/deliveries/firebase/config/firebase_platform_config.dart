@@ -1,8 +1,8 @@
 import 'package:args/args.dart';
 import 'package:meta/meta.dart';
-import 'package:truck/src/args_results_extension.dart';
 import 'package:truck/src/deliveries/firebase/config/firebase_base_config.dart';
-import 'package:truck/src/help_util.dart';
+import 'package:truck/src/util/args_results_extension.dart';
+import 'package:truck/src/util/help_util.dart';
 import 'package:yaml/yaml.dart';
 
 /// {@template FirebasePlatformConfig}
@@ -34,7 +34,9 @@ class FirebasePlatformConfig extends FirebaseBaseConfig {
   /// {@macro FirebasePlatformConfig}
   /// Creates a FirebasePlatformConfig from [ArgResults].
   factory FirebasePlatformConfig.fromArgs(
-      ArgResults args, ArgParser appParser,) {
+    ArgResults args,
+    ArgParser appParser,
+  ) {
     printHelp(args, appParser);
 
     return FirebasePlatformConfig(

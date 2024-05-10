@@ -27,8 +27,7 @@ void main() {
   });
   test(
       'Logs result from provided path in CLI and prints messages that '
-          'the path does not exist',
-      () async {
+      'the path does not exist', () async {
     const path = 'does-not-exist.yaml';
     final process = await Process.start(
       'dart',

@@ -1,7 +1,7 @@
 import 'package:args/args.dart';
 import 'package:args/src/arg_results.dart';
 import 'package:test/test.dart';
-import 'package:truck/src/args_results_extension.dart';
+import 'package:truck/src/util/args_results_extension.dart';
 
 void main() {
   test('getCommand from argresult by name', () {

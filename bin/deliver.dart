@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:truck/src/deliveries/firebase/firebase_delivery.dart';
-import 'package:truck/src/help_util.dart';
+import 'package:truck/src/util/help_util.dart';
+import 'package:truck/src/util/logging.dart';
 import 'package:yaml/yaml.dart';
 
 const deliveries = [
@@ -32,13 +33,11 @@ void main(List<String> args) {
   try {
     yamlMap = loadYaml(File(path).readAsStringSync()) as YamlMap;
   } catch (e) {
-    print('Your `$path` appears to be empty or malformed.');
-    return;
+    error('Your `$path` appears to be empty or malformed.');
   }
 
   if (deliveryArgs == null) {
-    print('No delivery found');
-    exit(1);
+    error('No delivery found');
   }
 
   final delivery =
@@ -46,8 +45,7 @@ void main(List<String> args) {
   final yamlConfigMap =
       (yamlMap['truck'] as YamlMap?)?[deliveryArgs.name] as YamlMap?;
   if (delivery == null || yamlConfigMap == null) {
-    print('No delivery configuration found');
-    exit(1);
+    error('No delivery configuration found');
   }
   delivery.deliver(deliveryArgs, yamlConfigMap);
 }

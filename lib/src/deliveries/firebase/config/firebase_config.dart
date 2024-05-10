@@ -1,9 +1,9 @@
 import 'package:args/args.dart';
 import 'package:meta/meta.dart';
-import 'package:truck/src/args_results_extension.dart';
 import 'package:truck/src/deliveries/firebase/config/firebase_base_config.dart';
 import 'package:truck/src/deliveries/firebase/config/firebase_platform_config.dart';
-import 'package:truck/src/help_util.dart';
+import 'package:truck/src/util/args_results_extension.dart';
+import 'package:truck/src/util/help_util.dart';
 import 'package:yaml/yaml.dart';
 
 ///{@template firebase_config}
@@ -54,7 +54,9 @@ class FirebaseConfig extends FirebaseBaseConfig {
       testers: args.multiOptionOrNull('testers'),
       android: android != null
           ? FirebasePlatformConfig.fromArgs(
-              android, appParser.commands['android']!,)
+              android,
+              appParser.commands['android']!,
+            )
           : null,
       ios: ios != null
           ? FirebasePlatformConfig.fromArgs(ios, appParser.commands['ios']!)
