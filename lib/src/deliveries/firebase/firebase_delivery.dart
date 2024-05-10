@@ -4,13 +4,22 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:googleapis/firebaseappdistribution/v1.dart';
 import 'package:googleapis_auth/auth_io.dart';
+import 'package:http/http.dart';
+import 'package:meta/meta.dart';
 import 'package:truck/src/deliveries/delivery.dart';
 import 'package:truck/src/deliveries/firebase/config/firebase_config.dart';
 import 'package:truck/src/deliveries/firebase/config/firebase_platform_config.dart';
 import 'package:yaml/yaml.dart';
 
+/// {@template FirebaseDelivery}
+/// A delivery method for Firebase.
+/// {@endtemplate}
 class FirebaseDelivery implements Delivery {
-  const FirebaseDelivery();
+  /// {@macro FirebaseDelivery}
+  const FirebaseDelivery({this.client});
+
+  /// A authenticated client for making requests to Firebase.
+  final Client? client;
 
   @override
   String get name => 'firebase';
@@ -25,29 +34,32 @@ class FirebaseDelivery implements Delivery {
     print(mergedConfig);
 
     final platform = args.command?.name;
-    final client = await _getClient(mergedConfig);
+    final gClient = await getGClient(mergedConfig);
 
     if (platform == 'android') {
       print(' 🚚 Delivering Android to Firebase 🚚');
       await uploadBinary(
-        client,
+        gClient,
         mergedConfig,
         mergedConfig.android!,
       );
     } else if (platform == 'ios') {
       print(' 🚚 Delivering iOS to Firebase 🚚');
       await uploadBinary(
-        client,
+        gClient,
         mergedConfig,
         mergedConfig.ios!,
       );
     } else {
-      print('Could not deliver to Firebase. Please specify a platform (android/ios)');
+      print(
+          'Could not deliver to Firebase. Please specify a platform (android/ios)',);
     }
   }
 
+  @visibleForTesting
+  // ignore: public_member_api_docs
   Future<void> uploadBinary(
-    AutoRefreshingAuthClient client,
+    Client client,
     FirebaseConfig config,
     FirebasePlatformConfig platform,
   ) async {
@@ -64,7 +76,8 @@ class FirebaseDelivery implements Delivery {
     GoogleFirebaseAppdistroV1Release release;
     try {
       final uploadResponse = await client.post(
-        Uri.parse('https://firebaseappdistribution.googleapis.com/upload/v1/$appId/releases:upload'),
+        Uri.parse(
+            'https://firebaseappdistribution.googleapis.com/upload/v1/$appId/releases:upload',),
         body: fileContent,
         headers: {
           'Content-Type': 'application/octet-stream',
@@ -76,7 +89,7 @@ class FirebaseDelivery implements Delivery {
       final operation = GoogleLongrunningOperation.fromJson(
         jsonDecode(uploadResponse.body) as Map<String, dynamic>,
       );
-      release = await _poll_operations(api, operation);
+      release = await pollOperations(api, operation);
     } catch (e) {
       print('Unable to upload binary to Firebase');
       print(e);
@@ -85,8 +98,10 @@ class FirebaseDelivery implements Delivery {
 
     if (releaseNotes != null) {
       try {
-        release.releaseNotes = GoogleFirebaseAppdistroV1ReleaseNotes(text: releaseNotes);
-        release = await api.projects.apps.releases.patch(release, release.name!);
+        release.releaseNotes =
+            GoogleFirebaseAppdistroV1ReleaseNotes(text: releaseNotes);
+        release =
+            await api.projects.apps.releases.patch(release, release.name!);
       } catch (e) {
         print('Unable to add release notes to release ${release.name}');
         print(e);
@@ -95,12 +110,14 @@ class FirebaseDelivery implements Delivery {
 
       if (groups.isNotEmpty && testers.isNotEmpty) {
         try {
-          final distribution = GoogleFirebaseAppdistroV1DistributeReleaseRequest(
+          final distribution =
+              GoogleFirebaseAppdistroV1DistributeReleaseRequest(
             testerEmails: testers,
             groupAliases: groups,
           );
 
-          await api.projects.apps.releases.distribute(distribution, release.name!);
+          await api.projects.apps.releases
+              .distribute(distribution, release.name!);
         } catch (e) {
           print('Unable to distribute release ${release.name} to groups: '
               '${groups.join(',')} and testers: ${testers.join(',')}');
@@ -113,7 +130,9 @@ class FirebaseDelivery implements Delivery {
     }
   }
 
-  Future<GoogleFirebaseAppdistroV1Release> _poll_operations(
+  @visibleForTesting
+  // ignore: public_member_api_docs
+  Future<GoogleFirebaseAppdistroV1Release> pollOperations(
     FirebaseAppDistributionApi api,
     GoogleLongrunningOperation operation,
   ) async {
@@ -122,8 +141,9 @@ class FirebaseDelivery implements Delivery {
       return release;
     }
 
-    for (int i = 0; i < 60; i++) {
-      final response = await api.projects.apps.releases.operations.get(operation.name!);
+    for (var i = 0; i < 60; i++) {
+      final response =
+          await api.projects.apps.releases.operations.get(operation.name!);
       final release = _checkOperation(response);
       if (release != null) {
         return release;
@@ -133,27 +153,36 @@ class FirebaseDelivery implements Delivery {
     exit(1);
   }
 
-  GoogleFirebaseAppdistroV1Release? _checkOperation(GoogleLongrunningOperation operation) {
+  GoogleFirebaseAppdistroV1Release? _checkOperation(
+      GoogleLongrunningOperation operation,) {
     if (operation.done ?? false) {
       if (operation.error != null) {
         print('Error: ${operation.error!.message}');
         exit(1);
       } else {
-        return GoogleFirebaseAppdistroV1Release.fromJson(operation.response!['release'] as Map<String, dynamic>);
+        return GoogleFirebaseAppdistroV1Release.fromJson(
+            operation.response!['release']! as Map<String, dynamic>,);
       }
     }
     return null;
   }
 
-  String _projectAppId(String appId) => 'projects/${appId.split(':')[1]}/apps/$appId';
+  String _projectAppId(String appId) =>
+      'projects/${appId.split(':')[1]}/apps/$appId';
 
-  Future<AutoRefreshingAuthClient> _getClient(FirebaseConfig config) async {
-    final serviceAccountContent = File(config.serviceAccountFile!).readAsStringSync();
+  @visibleForTesting
+  // ignore: public_member_api_docs
+  Future<Client> getGClient(FirebaseConfig config) async {
+    if (client != null) return client!;
+
+    final serviceAccountContent =
+        File(config.serviceAccountFile!).readAsStringSync();
     final credentials = ServiceAccountCredentials.fromJson(
       jsonDecode(serviceAccountContent) as Map<String, dynamic>,
     );
 
-    return clientViaServiceAccount(credentials, [FirebaseAppDistributionApi.cloudPlatformScope]);
+    return clientViaServiceAccount(
+        credentials, [FirebaseAppDistributionApi.cloudPlatformScope],);
   }
 
   @override

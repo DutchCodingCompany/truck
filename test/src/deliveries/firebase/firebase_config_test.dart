@@ -3,6 +3,7 @@
 import 'package:parameterized_test/parameterized_test.dart';
 import 'package:test/test.dart';
 import 'package:truck/src/deliveries/firebase/config/firebase_config.dart';
+import 'package:truck/src/deliveries/firebase/config/firebase_platform_config.dart';
 import 'package:yaml/yaml.dart';
 
 void main() {
@@ -37,8 +38,14 @@ ios:
     expect(config.testers, ['testers@test.com', 'test2@test.com']);
 
     expect(config.android, isA<FirebasePlatformConfig>());
-    expect(config.android!.appId, '1:123456789012:android:1234567890123456789012');
-    expect(config.android!.file, 'build/app/outputs/flutter-apk/app-release.apk');
+    expect(
+      config.android!.appId,
+      '1:123456789012:android:1234567890123456789012',
+    );
+    expect(
+      config.android!.file,
+      'build/app/outputs/flutter-apk/app-release.apk',
+    );
     expect(config.android!.releaseNotes, 'RELEASE: Android');
 
     expect(config.ios, isA<FirebasePlatformConfig>());
@@ -62,7 +69,11 @@ ios:
     [
       const FirebaseConfig(serviceAccountFile: 'token1', testers: ['1']),
       const FirebaseConfig(serviceAccountFile: 'token2', groups: ['2']),
-      const FirebaseConfig(serviceAccountFile: 'token2', groups: ['2'], testers: ['1']),
+      const FirebaseConfig(
+        serviceAccountFile: 'token2',
+        groups: ['2'],
+        testers: ['1'],
+      ),
     ],
     [
       const FirebaseConfig(

@@ -1,9 +1,12 @@
 import 'package:args/args.dart';
 import 'package:collection/collection.dart';
 import 'package:test/test.dart';
+import 'package:truck/src/deliveries/firebase/config/firebase_config.dart';
 import 'package:truck/src/deliveries/firebase/firebase_delivery.dart';
 
-bool Function(List<String>?, List<String>?) eq = const ListEquality<String>().equals;
+typedef EqualsFunc = bool Function(List<String>?, List<String>?);
+
+EqualsFunc eq = const ListEquality<String>().equals;
 
 void main() {
   late FirebaseDelivery delivery;
@@ -15,9 +18,12 @@ void main() {
   });
 
   test('parse global firebase options', () {
-    final args = _args('--cli-token=token --groups=group1,group2 --testers=tester1,tester2');
+    final args = _args(
+      '--cli-token=token --groups=group1,group2 --testers=tester1,tester2',
+    );
+    final parseResults = parser.parse(args);
 
-    final result = delivery.parseArgs(parser.parse(args));
+    final result = FirebaseConfig.fromArgs(parseResults, parser);
 
     expect(result.serviceAccountFile, 'token');
     expect(eq(result.groups, ['group1', 'group2']), isTrue);
@@ -27,9 +33,13 @@ void main() {
   });
 
   test('parse android firebase options', () {
-    final args = _args('android --file pubspec.yaml --app-id 123 --groups=group1,group2 --testers=tester1,tester2');
+    final args = _args(
+      'android --file pubspec.yaml --app-id 123 '
+          '--groups=group1,group2 --testers=tester1,tester2',
+    );
+    final parseResults = parser.parse(args);
 
-    final result = delivery.parseArgs(parser.parse(args));
+    final result = FirebaseConfig.fromArgs(parseResults, parser);
 
     expect(result.serviceAccountFile, '');
     expect(eq(result.groups, []), isTrue);
@@ -44,9 +54,13 @@ void main() {
   });
 
   test('parse ios firebase options', () {
-    final args = _args('ios --file pubspec.yaml --app-id 123 --groups=group1,group2 --testers=tester1,tester2');
+    final args = _args(
+      'ios --file pubspec.yaml --app-id 123 --groups=group1,group2 '
+          '--testers=tester1,tester2',
+    );
+    final parseResults = parser.parse(args);
 
-    final result = delivery.parseArgs(parser.parse(args));
+    final result = FirebaseConfig.fromArgs(parseResults, parser);
 
     expect(result.serviceAccountFile, '');
     expect(eq(result.groups, []), isTrue);

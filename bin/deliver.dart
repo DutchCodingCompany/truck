@@ -41,8 +41,10 @@ void main(List<String> args) {
     exit(1);
   }
 
-  final delivery = deliveries.where((d) => d.name == deliveryArgs.name).firstOrNull;
-  final yamlConfigMap = (yamlMap['truck'] as YamlMap?)?[deliveryArgs.name] as YamlMap?;
+  final delivery =
+      deliveries.where((d) => d.name == deliveryArgs.name).firstOrNull;
+  final yamlConfigMap =
+      (yamlMap['truck'] as YamlMap?)?[deliveryArgs.name] as YamlMap?;
   if (delivery == null || yamlConfigMap == null) {
     print('No delivery configuration found');
     exit(1);

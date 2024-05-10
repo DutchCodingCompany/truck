@@ -27,7 +27,8 @@ void main() {
     expect(result, commandResults);
   });
 
-  test('getCommand from argresult by name returns null if name doenst match', () {
+  test('getCommand from argresult by name returns null if name doenst match',
+      () {
     final commandResults = newArgResults(
       ArgParser(),
       {},
@@ -50,7 +51,8 @@ void main() {
     expect(result, isNull);
   });
 
-  test('getCommand from argresult by name returns null if there is no '
+  test(
+      'getCommand from argresult by name returns null if there is no '
       'command result', () {
     final argResults = newArgResults(
       ArgParser(),

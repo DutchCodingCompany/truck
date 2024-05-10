@@ -5,8 +5,12 @@ import 'package:truck/src/deliveries/firebase/config/firebase_base_config.dart';
 import 'package:truck/src/help_util.dart';
 import 'package:yaml/yaml.dart';
 
+/// {@template FirebasePlatformConfig}
+/// Configuration for Firebase platform.
+/// {@endtemplate}
 @immutable
 class FirebasePlatformConfig extends FirebaseBaseConfig {
+  /// {@macro FirebasePlatformConfig}
   const FirebasePlatformConfig({
     required this.appId,
     required this.file,
@@ -15,6 +19,8 @@ class FirebasePlatformConfig extends FirebaseBaseConfig {
     super.testers,
   });
 
+  /// {@macro FirebasePlatformConfig}
+  /// Creates a FirebasePlatformConfig from a [YamlMap].
   factory FirebasePlatformConfig.fromYaml(YamlMap yaml) {
     return FirebasePlatformConfig(
       appId: yaml['app_id'] as String,
@@ -25,7 +31,10 @@ class FirebasePlatformConfig extends FirebaseBaseConfig {
     );
   }
 
-  factory FirebasePlatformConfig.fromArgs(ArgResults args, ArgParser appParser) {
+  /// {@macro FirebasePlatformConfig}
+  /// Creates a FirebasePlatformConfig from [ArgResults].
+  factory FirebasePlatformConfig.fromArgs(
+      ArgResults args, ArgParser appParser,) {
     printHelp(args, appParser);
 
     return FirebasePlatformConfig(
@@ -37,10 +46,14 @@ class FirebasePlatformConfig extends FirebaseBaseConfig {
     );
   }
 
+  /// The app identifier from firebase.
   final String appId;
+
+  /// The file path to the artifact to upload.
   final String file;
 
-  FirebasePlatformConfig merge(FirebasePlatformConfig config) {
+  /// Merges this configuration with another [FirebasePlatformConfig].
+  FirebasePlatformConfig join(FirebasePlatformConfig config) {
     return FirebasePlatformConfig(
       appId: config.appId.isNotEmpty ? config.appId : appId,
       file: config.file.isNotEmpty ? config.file : file,
@@ -53,7 +66,10 @@ class FirebasePlatformConfig extends FirebaseBaseConfig {
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        other is FirebasePlatformConfig && super == other && appId == other.appId && file == other.file;
+        other is FirebasePlatformConfig &&
+            super == other &&
+            appId == other.appId &&
+            file == other.file;
   }
 
   @override

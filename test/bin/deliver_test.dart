@@ -13,7 +13,9 @@ void main() {
       ['run', 'truck:deliver firebase'],
     );
 
-    final lineStream = process.stdout.transform(const Utf8Decoder()).transform(const LineSplitter());
+    final lineStream = process.stdout
+        .transform(const Utf8Decoder())
+        .transform(const LineSplitter());
 
     expect(
       lineStream,
@@ -23,14 +25,19 @@ void main() {
       ]),
     );
   });
-  test('Logs result from provided path in CLI and prints messages that the path does not exist', () async {
+  test(
+      'Logs result from provided path in CLI and prints messages that '
+          'the path does not exist',
+      () async {
     const path = 'does-not-exist.yaml';
     final process = await Process.start(
       'dart',
       ['run', 'truck:deliver', 'firebase', '--path=$path'],
     );
 
-    final lineStream = process.stdout.transform(const Utf8Decoder()).transform(const LineSplitter());
+    final lineStream = process.stdout
+        .transform(const Utf8Decoder())
+        .transform(const LineSplitter());
 
     expect(
       lineStream,
@@ -46,10 +53,12 @@ void main() {
     const path = 'test/sample_yamls/truck.yaml';
     final process = await Process.start(
       'dart',
-      ['run', 'truck:deliver','firebase', '--path=$path'],
+      ['run', 'truck:deliver', 'firebase', '--path=$path'],
     );
 
-    final lineStream = process.stdout.transform(const Utf8Decoder()).transform(const LineSplitter());
+    final lineStream = process.stdout
+        .transform(const Utf8Decoder())
+        .transform(const LineSplitter());
 
     expect(
       lineStream,

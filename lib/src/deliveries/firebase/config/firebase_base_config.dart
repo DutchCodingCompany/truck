@@ -1,16 +1,31 @@
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
+/// {@template firebase_base_config}
+/// Base configuration for Firebase.
+/// {@endtemplate}
 @immutable
 class FirebaseBaseConfig {
+  /// {@macro firebase_base_config}
   const FirebaseBaseConfig({
     this.releaseNotes,
     this.groups,
     this.testers,
   });
 
+  /// {@template releaseNotes}
+  /// Release notes for the Firebase distribution.
+  /// {@endtemplate}
   final String? releaseNotes;
+
+  /// {@template groups}
+  /// Groups for the Firebase distribution.
+  /// {@endtemplate}
   final List<String>? groups;
+
+  /// {@template testers}
+  /// Testers for the Firebase distribution.
+  /// {@endtemplate}
   final List<String>? testers;
 
   @override
