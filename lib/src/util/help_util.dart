@@ -6,12 +6,14 @@ import 'package:truck/src/util/logging.dart';
 /// Print a help message if the `help` option is provided.
 void printHelp(ArgResults result, ArgParser parser) {
   if (result['help'] == false) return;
-  info('Usage: deliver [options] <command> [command options]');
-  info(parser.usage);
+  log
+    ..info('Usage: deliver [options] <command> [command options]')
+    ..info(parser.usage);
   if (parser.commands.isNotEmpty) {
     for (final command in parser.commands.entries) {
-      info('\n${command.key} commands:');
-      info(command.value.usage);
+      log
+        ..info('\n${command.key} commands:')
+        ..info(command.value.usage);
     }
   }
   exit(0);

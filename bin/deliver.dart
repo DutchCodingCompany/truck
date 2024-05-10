@@ -33,19 +33,17 @@ void main(List<String> args) {
   try {
     yamlMap = loadYaml(File(path).readAsStringSync()) as YamlMap;
   } catch (e) {
-    error('Your `$path` appears to be empty or malformed.');
+    log.error('Your `$path` appears to be empty or malformed.');
   }
 
   if (deliveryArgs == null) {
-    error('No delivery found');
+    log.error('No delivery found');
   }
 
-  final delivery =
-      deliveries.where((d) => d.name == deliveryArgs.name).firstOrNull;
-  final yamlConfigMap =
-      (yamlMap['truck'] as YamlMap?)?[deliveryArgs.name] as YamlMap?;
+  final delivery = deliveries.where((d) => d.name == deliveryArgs.name).firstOrNull;
+  final yamlConfigMap = (yamlMap['truck'] as YamlMap?)?[deliveryArgs.name] as YamlMap?;
   if (delivery == null || yamlConfigMap == null) {
-    error('No delivery configuration found');
+    log.error('No delivery configuration found');
   }
   delivery.deliver(deliveryArgs, yamlConfigMap);
 }

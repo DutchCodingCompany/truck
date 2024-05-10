@@ -17,10 +17,13 @@ import 'package:yaml/yaml.dart';
 /// {@endtemplate}
 class FirebaseDelivery implements Delivery {
   /// {@macro FirebaseDelivery}
-  const FirebaseDelivery({this.client});
+  const FirebaseDelivery({Client? client, Log? customLog})
+      : _client = client,
+        _log = customLog ?? log;
 
   /// A authenticated client for making requests to Firebase.
-  final Client? client;
+  final Client? _client;
+  final Log _log;
 
   @override
   String get name => 'firebase';
@@ -32,27 +35,27 @@ class FirebaseDelivery implements Delivery {
     final mergedConfig = yamlConfig.join(argsConfig);
 
     // TODO(guldem): check config
-    info(mergedConfig);
+    _log.info(mergedConfig);
 
     final platform = args.command?.name;
-    final gClient = await getGClient(mergedConfig);
+    final gClient = await _getGClient(mergedConfig);
 
     if (platform == 'android') {
-      info('Delivering Android to Firebase');
+      _log.info('Delivering Android to Firebase');
       await uploadBinary(
         gClient,
         mergedConfig,
         mergedConfig.android!,
       );
     } else if (platform == 'ios') {
-      info('Delivering iOS to Firebase');
+      _log.info('Delivering iOS to Firebase');
       await uploadBinary(
         gClient,
         mergedConfig,
         mergedConfig.ios!,
       );
     } else {
-      error(
+      _log.error(
         'Could not deliver to Firebase. Please specify a platform (android/ios)',
       );
     }
@@ -70,7 +73,7 @@ class FirebaseDelivery implements Delivery {
     final testers = <String>{...?platform.testers, ...?config.testers}.toList();
 
     final api = FirebaseAppDistributionApi(client);
-    final appId = _projectAppId(platform.appId);
+    final appId = projectAppId(platform.appId);
     final file = File(platform.file);
     final fileName = file.uri.pathSegments.last;
     final fileContent = file.readAsBytesSync();
@@ -94,36 +97,32 @@ class FirebaseDelivery implements Delivery {
       );
       release = await pollOperations(api, operation);
     } catch (e) {
-      error('Unable to upload binary to Firebase: $e');
+      _log.error('Unable to upload binary to Firebase: $e');
     }
 
     if (releaseNotes != null) {
       try {
-        release.releaseNotes =
-            GoogleFirebaseAppdistroV1ReleaseNotes(text: releaseNotes);
-        release =
-            await api.projects.apps.releases.patch(release, release.name!);
+        release.releaseNotes = GoogleFirebaseAppdistroV1ReleaseNotes(text: releaseNotes);
+        release = await api.projects.apps.releases.patch(release, release.name!);
       } catch (e) {
-        error('Unable to add release notes to release ${release.name}, $e');
+        _log.error('Unable to add release notes to release ${release.name}, $e');
       }
 
       if (groups.isNotEmpty && testers.isNotEmpty) {
         try {
-          final distribution =
-              GoogleFirebaseAppdistroV1DistributeReleaseRequest(
+          final distribution = GoogleFirebaseAppdistroV1DistributeReleaseRequest(
             testerEmails: testers,
             groupAliases: groups,
           );
 
-          await api.projects.apps.releases
-              .distribute(distribution, release.name!);
+          await api.projects.apps.releases.distribute(distribution, release.name!);
         } catch (e) {
-          error('Unable to distribute release ${release.name} to groups: '
+          _log.error('Unable to distribute release ${release.name} to groups: '
               '${groups.join(',')} and testers: ${testers.join(',')}\n $e');
         }
       }
 
-      info('Release delivered successfully!');
+      _log.info('Release delivered successfully!');
     }
   }
 
@@ -139,15 +138,15 @@ class FirebaseDelivery implements Delivery {
     }
 
     for (var i = 0; i < 60; i++) {
-      final response =
-          await api.projects.apps.releases.operations.get(operation.name!);
+      final response = await api.projects.apps.releases.operations.get(operation.name!);
       final release = _checkOperation(response);
       if (release != null) {
         return release;
       }
       await Future<void>.delayed(const Duration(seconds: 5));
     }
-    exit(1);
+
+    _log.error('Operation timed out');
   }
 
   GoogleFirebaseAppdistroV1Release? _checkOperation(
@@ -155,7 +154,7 @@ class FirebaseDelivery implements Delivery {
   ) {
     if (operation.done ?? false) {
       if (operation.error != null) {
-        error('Error: ${operation.error!.message}');
+        _log.error('Error: ${operation.error!.message}');
       } else {
         return GoogleFirebaseAppdistroV1Release.fromJson(
           operation.response!['release']! as Map<String, dynamic>,
@@ -165,16 +164,14 @@ class FirebaseDelivery implements Delivery {
     return null;
   }
 
-  String _projectAppId(String appId) =>
-      'projects/${appId.split(':')[1]}/apps/$appId';
-
   @visibleForTesting
   // ignore: public_member_api_docs
-  Future<Client> getGClient(FirebaseConfig config) async {
-    if (client != null) return client!;
+  String projectAppId(String appId) => 'projects/${appId.split(':')[1]}/apps/$appId';
 
-    final serviceAccountContent =
-        File(config.serviceAccountFile!).readAsStringSync();
+  Future<Client> _getGClient(FirebaseConfig config) async {
+    if (_client != null) return _client;
+
+    final serviceAccountContent = File(config.serviceAccountFile!).readAsStringSync();
     final credentials = ServiceAccountCredentials.fromJson(
       jsonDecode(serviceAccountContent) as Map<String, dynamic>,
     );
