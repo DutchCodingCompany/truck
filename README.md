@@ -1,36 +1,72 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# 🚚 Truck: Your Flutter app's one-stop delivery service for App Stores & Firebase.
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
+## Features ✨
+ - Configure your app's deployments in a single file.
+ - Deploy to:
+    - [x] Firebase App Distribution
+    - [ ] Play Store
+    - [ ] TestFlight
+ - Written in Dart
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
-
-```dart
-const like = 'sample';
+## Installation 🛠
+Add the dependency to your `pubspec.yaml` file:
+```yaml
+dev_dependencies:
+  truck: [latest-version]
 ```
+
+## Usage 🚀
+
+### Configuration
+Specify your app's deployment configuration in your `pubspec.yaml` or custom yaml file.
+
+For example to deploy to Firebase App Distribution:
+```yaml
+truck:
+  firebase:
+    # Overal Release notes for the deployment
+    release_notes: 'RELEASE: $CI_COMMIT'
+    # Google service account file location for authentication with Firebase
+    service_account_file: service-account.json
+    # Overal groups to distribute the app to
+    groups:
+      - 'testers'
+    # Overal testers to distribute the app to
+    testers: 
+      - 'test-guy@awesome.com'
+    android:
+      # Android app id
+      app_id: 1:123456789012:android:1234567890123456789012
+      # Binary file location to distribute
+      file: build/app/outputs/flutter-apk/app-release.apk
+    ios:
+      # iOS app id
+      app_id: 1:123456789012:ios:1234567890123456789012
+      # Binary file location to distribute
+      file: build/app/outputs/flutter-apk/app-release.ipa
+      # iOS groups to distribute the app to
+      groups: 
+        - 'testers_ios'
+      # iOS testers to distribute the app to
+      testers:
+        - 'the-ios-tester@awesome.com'
+        - 'someone-else@awesome.com'
+```
+
+### Run the package
+Run the package and specify with store to deploy to:
+```bash
+# Deploy to Firebase App Distribution android configuration
+dart run truck:deliver firebase android
+# Deploy to Firebase App Distribution ios configuration with custom release notes
+dart run truck:deliver firebase ios --release-notes='New release notes'
+```
+
+
+<!-- 
+TODO: Add documentation for different deliveries (Firebase, Play Store, TestFlight)
+
+TODO: Add examples for different deliveries (Firebase, Play Store, TestFlight)
 
 ## Additional information
 
@@ -78,3 +114,4 @@ dart run truck:deliver firebase --release-notes= '' android --app_id='' play_sto
 dart run truck:deliver firebase --platform=android
 dart run truck:deliver firebase --platform=android --release-notes='asdasd' play_store --release-notes='asdasd'
 ```
+-->
