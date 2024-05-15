@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:truck/src/deliveries/firebase/firebase_delivery.dart';
+import 'package:truck/src/util/env_helper.dart';
 import 'package:truck/src/util/help_util.dart';
 import 'package:truck/src/util/logging.dart';
 import 'package:yaml/yaml.dart';
@@ -40,12 +42,15 @@ void main(List<String> args) {
     log.error('No delivery found');
   }
 
-  final delivery =
-      deliveries.where((d) => d.name == deliveryArgs.name).firstOrNull;
-  final yamlConfigMap =
-      (yamlMap['truck'] as YamlMap?)?[deliveryArgs.name] as YamlMap?;
+  final delivery = deliveries.where((d) => d.name == deliveryArgs.name).firstOrNull;
+  final yamlConfigMap = (yamlMap['truck'] as YamlMap?)?[deliveryArgs.name] as YamlMap?;
   if (delivery == null || yamlConfigMap == null) {
     log.error('No delivery configuration found');
   }
-  delivery.deliver(deliveryArgs, yamlConfigMap);
+  delivery.deliver(deliveryArgs, _applyEnviroments(yamlConfigMap));
+}
+
+YamlMap _applyEnviroments(YamlMap yamlMap) {
+  final enviromentYaml = applyEnviroments(jsonEncode(yamlMap));
+  return loadYaml(enviromentYaml) as YamlMap;
 }
